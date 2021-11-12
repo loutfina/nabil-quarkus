@@ -36,12 +36,13 @@ public class UserResource {
 	
     @POST
 	@Consumes(MediaType.APPLICATION_JSON)
-    public Uni<Response> create(String name) {      //Uni is an asynchronous type
-        if (name == null ) {
+    public Uni<Response> create(User user) {      //Uni is an asynchronous type
+        if (user == null ) {
             throw new WebApplicationException("Try to push an invalid user", 422);
         }
-        name = formatName(name);
-        User newUser = new User(name);
+        // format name and remove any ID to create a new user (I don't check if it already exists)
+        String name = formatName(user.name); 
+        User newUser = new User(name);  
         return Panache.withTransaction(newUser::persist).replaceWith(Response.ok(newUser).status(Status.CREATED)::build);
     }
 
